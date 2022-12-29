@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/menuFragment">
+
+    <fragment
+        android:id="@+id/menuFragment"
+        android:name="com.fonagyma.astrogame.MenuFragment"
+        android:label="@string/MENU_BUTTON_LABEL"
+        tools:layout="@layout/fragment_menu">
+        <action
+            android:id="@+id/action_menuFragment_to_statsFragment"
+            app:destination="@id/statsFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_playFragment"
+            app:destination="@id/playFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/playFragment"
+        android:name="com.fonagyma.astrogame.PlayFragment"
+        android:label="@string/PLAY_BUTTON_LABEL"
+        tools:layout="@layout/fragment_play">
+        <argument
+            android:name="kkkk"
+            app:argType="string" />
+    </fragment>
+    <fragment
+    android:id="@+id/statsFragment"
+    android:name="com.fonagyma.astrogame.StatsFragment"
+    android:label="@string/STATS_BUTTON_LABEL"
+    tools:layout="@layout/fragment_stats">
+</fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.fonagyma.astrogame.SettingsFragment"
+        android:label="SettingsFragment"
+        />
+</navigation>
