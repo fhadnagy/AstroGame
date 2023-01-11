@@ -28,6 +28,9 @@
         <argument
             android:name="kkkk"
             app:argType="string" />
+        <action
+            android:id="@+id/action_playFragment_to_gameFragment2"
+            app:destination="@id/gameFragment2" />
     </fragment>
     <fragment
     android:id="@+id/statsFragment"
@@ -40,4 +43,13 @@
         android:name="com.fonagyma.astrogame.SettingsFragment"
         android:label="SettingsFragment"
         />
+    <fragment
+        android:id="@+id/gameFragment2"
+        android:name="com.fonagyma.astrogame.GameFragment"
+        android:label="fragment_game"
+        tools:layout="@layout/fragment_game" >
+        <action
+            android:id="@+id/action_gameFragment2_to_playFragment"
+            app:destination="@id/playFragment" />
+    </fragment>
 </navigation>

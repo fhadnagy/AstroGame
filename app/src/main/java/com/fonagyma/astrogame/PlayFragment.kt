@@ -28,6 +28,9 @@ class PlayFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.btnbtn.setOnClickListener {
+            findNavController().navigate(PlayFragmentDirections.actionPlayFragmentToGameFragment2())
+        }
 
     }
 
