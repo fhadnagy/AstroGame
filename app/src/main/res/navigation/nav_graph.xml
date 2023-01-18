@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/menuFragment"
-        android:name="com.fonagyma.astrogame.MenuFragment"
+        android:name="com.fonagyma.astrogame.ui.fragment.MenuFragment"
         android:label="@string/MENU_BUTTON_LABEL"
         tools:layout="@layout/fragment_menu">
         <action
@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/playFragment"
-        android:name="com.fonagyma.astrogame.PlayFragment"
+        android:name="com.fonagyma.astrogame.ui.fragment.PlayFragment"
         android:label="@string/PLAY_BUTTON_LABEL"
         tools:layout="@layout/fragment_play">
         <argument
@@ -34,18 +34,18 @@
     </fragment>
     <fragment
     android:id="@+id/statsFragment"
-    android:name="com.fonagyma.astrogame.StatsFragment"
+    android:name="com.fonagyma.astrogame.ui.fragment.StatsFragment"
     android:label="@string/STATS_BUTTON_LABEL"
     tools:layout="@layout/fragment_stats">
 </fragment>
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.fonagyma.astrogame.SettingsFragment"
+        android:name="com.fonagyma.astrogame.ui.fragment.SettingsFragment"
         android:label="SettingsFragment"
         />
     <fragment
         android:id="@+id/gameFragment2"
-        android:name="com.fonagyma.astrogame.GameFragment"
+        android:name="com.fonagyma.astrogame.ui.fragment.GameFragment"
         android:label="fragment_game"
         tools:layout="@layout/fragment_game" >
         <action

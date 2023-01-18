@@ -1,7 +1,6 @@
-package com.fonagyma.astrogame
+package com.fonagyma.astrogame.ui.fragment
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -10,6 +9,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
 import androidx.navigation.fragment.NavHostFragment
+import com.fonagyma.astrogame.R
 import com.fonagyma.astrogame.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

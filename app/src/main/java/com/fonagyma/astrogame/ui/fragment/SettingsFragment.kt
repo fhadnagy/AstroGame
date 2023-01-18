@@ -1,7 +1,8 @@
-package com.fonagyma.astrogame
+package com.fonagyma.astrogame.ui.fragment
 
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
+import com.fonagyma.astrogame.R
 
 class SettingsFragment : PreferenceFragmentCompat() {
 

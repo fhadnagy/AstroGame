@@ -1,4 +1,4 @@
-package com.fonagyma.astrogame
+package com.fonagyma.astrogame.ui.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
