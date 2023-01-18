@@ -44,5 +44,14 @@
         android:id="@+id/gamemodesFragment"
         android:name="com.fonagyma.astrogame.ui.fragment.GamemodesFragment"
         android:label="fragment_gamemodes"
-        tools:layout="@layout/fragment_gamemodes" />
+        tools:layout="@layout/fragment_gamemodes" >
+        <action
+            android:id="@+id/action_gamemodesFragment_to_fullscreenBaseGameFragment"
+            app:destination="@id/fullscreenBaseGameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fullscreenBaseGameFragment"
+        android:name="com.fonagyma.astrogame.game.fragment.FullscreenBaseGameFragment"
+        android:label="fragment_fullscreen_base_game"
+        tools:layout="@layout/fragment_fullscreen_base_game" />
 </navigation>

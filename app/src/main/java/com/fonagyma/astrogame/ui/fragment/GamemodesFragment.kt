@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.fonagyma.astrogame.R
 import com.fonagyma.astrogame.databinding.FragmentGamemodesBinding
 
@@ -29,6 +30,10 @@ class GamemodesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.playButton.setOnClickListener {
+            val action = GamemodesFragmentDirections.actionGamemodesFragmentToFullscreenBaseGameFragment()
+            findNavController().navigate(action)
+        }
         super.onViewCreated(view, savedInstanceState)
     }
 
