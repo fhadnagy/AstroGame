@@ -12,6 +12,7 @@
     <string name="PLAY_BUTTON_LABEL">PLAY</string>
     <string name="STATS_BUTTON_LABEL">STATS</string>
     <string name="MENU_BUTTON_LABEL">MENU</string>
+    <string name="GAMEMODES_BUTTON_LABEL">GAMEMODE</string>
     <string name="SETTINGS_BUTTON_LABEL">SETTINGS</string>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

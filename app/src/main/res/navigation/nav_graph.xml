@@ -3,34 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/menuFragment">
+    app:startDestination="@id/startMenuFragment">
 
     <fragment
-        android:id="@+id/menuFragment"
-        android:name="com.fonagyma.astrogame.ui.fragment.MenuFragment"
+        android:id="@+id/startMenuFragment"
+        android:name="com.fonagyma.astrogame.ui.fragment.StartMenuFragment"
         android:label="@string/MENU_BUTTON_LABEL"
-        tools:layout="@layout/fragment_menu">
+        tools:layout="@layout/fragment_start_menu">
+
         <action
-            android:id="@+id/action_menuFragment_to_statsFragment"
+            android:id="@+id/action_startMenuFragment_to_statsFragment"
             app:destination="@id/statsFragment" />
         <action
-            android:id="@+id/action_menuFragment_to_playFragment"
-            app:destination="@id/playFragment" />
-        <action
-            android:id="@+id/action_menuFragment_to_settingsFragment"
+            android:id="@+id/action_startMenuFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/playFragment"
-        android:name="com.fonagyma.astrogame.ui.fragment.PlayFragment"
-        android:label="@string/PLAY_BUTTON_LABEL"
-        tools:layout="@layout/fragment_play">
-        <argument
-            android:name="kkkk"
-            app:argType="string" />
         <action
-            android:id="@+id/action_playFragment_to_gameFragment2"
-            app:destination="@id/gameFragment2" />
+            android:id="@+id/action_startMenuFragment_to_infoFragment"
+            app:destination="@id/infoFragment" />
+        <action
+            android:id="@+id/action_startMenuFragment_to_gamemodesFragment"
+            app:destination="@id/gamemodesFragment" />
     </fragment>
     <fragment
     android:id="@+id/statsFragment"
@@ -44,12 +36,13 @@
         android:label="SettingsFragment"
         />
     <fragment
-        android:id="@+id/gameFragment2"
-        android:name="com.fonagyma.astrogame.ui.fragment.GameFragment"
-        android:label="fragment_game"
-        tools:layout="@layout/fragment_game" >
-        <action
-            android:id="@+id/action_gameFragment2_to_playFragment"
-            app:destination="@id/playFragment" />
-    </fragment>
+        android:id="@+id/infoFragment"
+        android:name="com.fonagyma.astrogame.ui.fragment.InfoFragment"
+        android:label="fragment_info"
+        tools:layout="@layout/fragment_info" />
+    <fragment
+        android:id="@+id/gamemodesFragment"
+        android:name="com.fonagyma.astrogame.ui.fragment.GamemodesFragment"
+        android:label="fragment_gamemodes"
+        tools:layout="@layout/fragment_gamemodes" />
 </navigation>

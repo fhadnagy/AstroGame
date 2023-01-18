@@ -18,10 +18,10 @@
         app:layout_constraintTop_toTopOf="parent" /-->
 
     <Button
-        android:id="@+id/playButton"
+        android:id="@+id/gamemodesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/PLAY_BUTTON_LABEL"
+        android:text="@string/GAMEMODES_BUTTON_LABEL"
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/statsButton"
         app:layout_constraintEnd_toEndOf="@+id/statsButton"
