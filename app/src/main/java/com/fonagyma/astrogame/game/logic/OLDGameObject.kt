@@ -7,7 +7,7 @@ import java.lang.Math.*
 import com.fonagyma.astrogame.R
 import kotlin.math.atan
 
-abstract class GameObject(pos: PointF, context: Context){
+abstract class OLDGameObject(pos: PointF, context: Context){
 
         var sizeX : Float = 1f
         var sizeY : Float = 1f
@@ -42,7 +42,7 @@ abstract class GameObject(pos: PointF, context: Context){
 
 }
 
-class Cannon(pos: PointF, context: Context) : GameObject(pos,context){
+class OLDCannon(pos: PointF, context: Context) : OLDGameObject(pos,context){
 
         var rotation : Float = 0f
         var millisSinceStart: Long= 0
@@ -128,8 +128,12 @@ class Cannon(pos: PointF, context: Context) : GameObject(pos,context){
         }
 }
 
+/**
+ * rotates clockwise
+ */
 fun rotateVector(v : PointF, rad: Double): PointF{
-        return PointF((cos(rad)*v.x+ sin(rad)*v.y).toFloat(), (cos(rad)*v.y- sin(rad)*v.x).toFloat())
+        return PointF((kotlin.math.cos(rad) *v.x+ kotlin.math.sin(rad) *v.y).toFloat(),
+                (kotlin.math.cos(rad) *v.y- kotlin.math.sin(rad) *v.x).toFloat())
 }
 
 fun mirrorVectorToVector(v:PointF,e:PointF):PointF{

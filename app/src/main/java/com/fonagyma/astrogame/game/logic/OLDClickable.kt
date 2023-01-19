@@ -4,15 +4,14 @@ import android.content.Context
 import android.graphics.*
 import android.util.Log
 import kotlin.math.*
-import com.fonagyma.astrogame.R
 
-abstract class Clickable(pos: PointF, rect: RectF,context: Context) : GameObject(pos,context) {
+abstract class OLDClickable(pos: PointF, rect: RectF, context: Context) : OLDGameObject(pos,context) {
     var hitBox : RectF = rect
     var upgradecost : Int = 0
     abstract fun onClick(p : PointF)
 }
 
-class CounterButton(pos: PointF, hitBox : RectF,context: Context,_ImageR: Int,_x:Float,_y:Float,_ctrStart:Float,_icrA:Float) : Clickable(pos, hitBox,context){
+class OLDCounterButton(pos: PointF, hitBox : RectF, context: Context, _ImageR: Int, _x:Float, _y:Float, _ctrStart:Float, _icrA:Float) : OLDClickable(pos, hitBox,context){
 
     var midP = PointF((hitBox.left+hitBox.right)/2,(hitBox.bottom+hitBox.top)/2)
     var strokeWidth = 5f
@@ -83,7 +82,7 @@ class CounterButton(pos: PointF, hitBox : RectF,context: Context,_ImageR: Int,_x
 
 }
 
-class Joystick(pos: PointF, hitBox : RectF,context: Context) : Clickable(pos, hitBox,context){
+class OLDJoystick(pos: PointF, hitBox : RectF, context: Context) : OLDClickable(pos, hitBox,context){
     var midP = PointF((hitBox.left+hitBox.right)/2,(hitBox.bottom+hitBox.top)/2)
     var cursorP : PointF = PointF(midP.x,midP.y)
     var colorBg = Color.argb(255,255,155,155)

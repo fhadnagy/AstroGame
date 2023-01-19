@@ -13,7 +13,10 @@
     <string name="STATS_BUTTON_LABEL">STATS</string>
     <string name="MENU_BUTTON_LABEL">MENU</string>
     <string name="GAMEMODES_BUTTON_LABEL">GAMEMODE</string>
-    <string name="SETTINGS_BUTTON_LABEL">SETTINGS</string>
+    <string name="LIMITLESS_MODE_BUTTON_LABEL">LIMITLESS</string>
+    <string name="SANDBOX_MODE_BUTTON_LABEL">SANDBOX</string>
+    <string name="WAVES_MODE_BUTTON_LABEL">WAWES</string>
+    <string name="KNOWLEDGE_BASE_BUTTON_LABEL">KNOWLEDGE BASE</string>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>

@@ -7,15 +7,13 @@ import android.graphics.*
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
-import androidx.core.view.marginBottom
-import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.random.Random
 import com.fonagyma.astrogame.R
 
 
 @SuppressLint("ViewConstructor")
-class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceView(context) , Runnable{
+class OLDLiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceView(context) , Runnable{
     private val debugging = true
     private lateinit var canvas: Canvas
     private val paint: Paint = Paint()
@@ -37,11 +35,11 @@ class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceV
     private var paused = false
     private var counterA = 0
     private var counterB = 0
-    private var clickableList = ArrayList<Clickable>()
-    private var drawables = ArrayList<GameObject>()
-    private var collidables = ArrayList<Collidable>()
-    private var js : Joystick
-    private var cnn : Cannon
+    private var clickableList = ArrayList<OLDClickable>()
+    private var drawables = ArrayList<OLDGameObject>()
+    private var collidables = ArrayList<OLDCollidable>()
+    private var js : OLDJoystick
+    private var cnn : OLDCannon
     private var pseRect = RectF(10f,10f,100f,100f)
     private var tryAgainRect = RectF(10f,10f,100f,100f)
     private var highScore = 0
@@ -75,10 +73,10 @@ class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceV
     ///var mP= PointF(mScreenX.toFloat()/2,mScreenY.toFloat()/2)
     init {
 
-        clickableList.add(Joystick(PointF(mScreenX*.4f,mScreenY*.5f),RectF(mScreenX*.4f,mScreenY*.5f,mScreenX-5f,mScreenY-5f),context))
-        drawables.add(Cannon(PointF(mScreenX*.3f,mScreenY*.8f),context))
-        js = clickableList[0] as Joystick
-        cnn = drawables[0] as Cannon
+        clickableList.add(OLDJoystick(PointF(mScreenX*.4f,mScreenY*.5f),RectF(mScreenX*.4f,mScreenY*.5f,mScreenX-5f,mScreenY-5f),context))
+        drawables.add(OLDCannon(PointF(mScreenX*.3f,mScreenY*.8f),context))
+        js = clickableList[0] as OLDJoystick
+        cnn = drawables[0] as OLDCannon
         cnn.rocketStartS = rocketSpeedBase*rocketSpeed
         walls = PointF(mScreenX.toFloat(),mScreenY.toFloat())
         btnHeight= walls.y/18
@@ -86,12 +84,12 @@ class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceV
         buttonStartPos.x= walls.x-btnHeight-buttonMargin
         buttonStartPos.y= 0f+buttonMargin
 
-        clickableList.add(CounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(0*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(0*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(0*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.rocket_speed,.4f,.4f,rocketSpeed,.25f))
-        clickableList.add(CounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(1*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(1*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(1*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.rocket_damage,.4f,.4f,rocketDamage,1f))
-        clickableList.add(CounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(2*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(2*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(2*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.explosion_damage,.4f,.4f,expDamage,1f))
-        clickableList.add(CounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(3*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(3*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(3*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.explosion_radius,.4f,.4f,expRadius,.5f))
-        clickableList.add(CounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(4*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(4*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(4*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.reload_speed,.4f,.4f,reloadSpeed,.125f))
-        clickableList.add(CounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(5*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(5*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(5*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.accuracy,.4f,.4f,rocketInaccuracy,.125f))
+        clickableList.add(OLDCounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(0*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(0*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(0*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.rocket_speed,.4f,.4f,rocketSpeed,.25f))
+        clickableList.add(OLDCounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(1*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(1*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(1*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.rocket_damage,.4f,.4f,rocketDamage,1f))
+        clickableList.add(OLDCounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(2*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(2*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(2*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.explosion_damage,.4f,.4f,expDamage,1f))
+        clickableList.add(OLDCounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(3*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(3*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(3*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.explosion_radius,.4f,.4f,expRadius,.5f))
+        clickableList.add(OLDCounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(4*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(4*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(4*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.reload_speed,.4f,.4f,reloadSpeed,.125f))
+        clickableList.add(OLDCounterButton(PointF(buttonStartPos.x,buttonStartPos.y+(5*(buttonMargin+btnHeight))+buttonMargin*2),RectF(buttonStartPos.x,buttonStartPos.y+(5*(buttonMargin+btnHeight))+buttonMargin*2,buttonStartPos.x+btnHeight,buttonStartPos.y+btnHeight+(5*(buttonMargin+btnHeight))+buttonMargin*2),context,R.drawable.accuracy,.4f,.4f,rocketInaccuracy,.125f))
 
         hpmax = 50
         hp = hpmax
@@ -323,11 +321,11 @@ class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceV
 
     }
     private fun update() {
-        rocketSpeed=(clickableList[1] as CounterButton).counter
-        rocketDamage=(clickableList[2] as CounterButton).counter
-        expDamage=(clickableList[3] as CounterButton).counter
-        expRadius=(clickableList[4] as CounterButton).counter
-        reloadSpeed=(clickableList[5] as CounterButton).counter
+        rocketSpeed=(clickableList[1] as OLDCounterButton).counter
+        rocketDamage=(clickableList[2] as OLDCounterButton).counter
+        expDamage=(clickableList[3] as OLDCounterButton).counter
+        expRadius=(clickableList[4] as OLDCounterButton).counter
+        reloadSpeed=(clickableList[5] as OLDCounterButton).counter
         cnn.rocketStartS=rocketSpeedBase*rocketSpeed
         if(!paused && !gameOver){
             if (collidables.size>0){
@@ -353,19 +351,19 @@ class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceV
                 counterA++
                 Log.d("gtms","$gameTimeMillis")
 
-                collidables.add(Asteroid(PointF(walls.x*(0.2f+random.nextFloat()*.6f), walls.y*(0.02f+random.nextFloat()*.03f)),
+                collidables.add(OLDAsteroid(PointF(walls.x*(0.2f+random.nextFloat()*.6f), walls.y*(0.02f+random.nextFloat()*.03f)),
                         context, PointF(-1f+random.nextFloat()*2f,2f+random.nextFloat()*2f),2f, 40f, walls,asteroidHpBase*(counterA/10 + 1)))
             }
             if ((gameTimeMillis*reloadSpeed).toLong()/rocketInterval > counterB){
                 counterB++
                 Log.d("gtms","$gameTimeMillis")
 
-                collidables.add(Rocket(PointF(cnn.position.x+cnn.rocketStartP.x,cnn.position.y+cnn.rocketStartP.y ),
+                collidables.add(OLDRocket(PointF(cnn.position.x+cnn.rocketStartP.x,cnn.position.y+cnn.rocketStartP.y ),
                     context, cnn.rocketStartV,rocketSize*rocketSizeBase, walls,(rocketDamageBase*rocketDamage).toInt(), cnn.rotation,rocketInaccuracyBase/rocketInaccuracy*rocketSpeed))
             }
 
         //deletes
-        val tempCollidables = ArrayList<Collidable>()
+        val tempCollidables = ArrayList<OLDCollidable>()
         for(a in collidables){
                 if (a.exists)
                 {
@@ -373,7 +371,7 @@ class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceV
                     if (a.type==1 && a.position.y>walls.y*earthH)
                     {
                         a.exists = false
-                        val astr = a as Asteroid
+                        val astr = a as OLDAsteroid
                         hp-= astr.hp
                     }else{
                         tempCollidables.add(a)
@@ -383,7 +381,7 @@ class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceV
                     currencyING+= (a.pointsOnDestruction*hpToMoney).roundToInt()
                     if (a.type==2 || a.type==4)
                     {
-                        tempCollidables.add(Explosion(a.position,context, PointF(0f,0f),expRadius*expRadiusBase,(expDamgeBase*expDamage).toInt()))
+                        tempCollidables.add(OLDExplosion(a.position,context, PointF(0f,0f),expRadius*expRadiusBase,(expDamgeBase*expDamage).toInt()))
                     }
                 }
         }
@@ -467,12 +465,12 @@ class LiveDrawingView(context: Context, mScreenX : Int, mScreenY: Int): SurfaceV
                 currencyING = 0
                 counterA = 0
                 counterB = 0
-                (clickableList[1] as CounterButton).reset()
-                (clickableList[2] as CounterButton).reset()
-                (clickableList[3] as CounterButton).reset()
-                (clickableList[4] as CounterButton).reset()
-                (clickableList[5] as CounterButton).reset()
-                (clickableList[6] as CounterButton).reset()
+                (clickableList[1] as OLDCounterButton).reset()
+                (clickableList[2] as OLDCounterButton).reset()
+                (clickableList[3] as OLDCounterButton).reset()
+                (clickableList[4] as OLDCounterButton).reset()
+                (clickableList[5] as OLDCounterButton).reset()
+                (clickableList[6] as OLDCounterButton).reset()
 
                 collidables.clear()
                 gameOver = false

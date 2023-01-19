@@ -4,24 +4,23 @@ import android.content.Context
 import android.graphics.*
 import android.util.Log
 import com.fonagyma.astrogame.R
-import kotlin.contracts.contract
 import kotlin.math.PI
 import kotlin.math.atan
 import kotlin.math.pow
 import kotlin.random.Random
 
-abstract class Collidable (pos: PointF,context: Context, _velocity : PointF, _hR : Float): GameObject(pos,context) {
+abstract class OLDCollidable (pos: PointF, context: Context, _velocity : PointF, _hR : Float): OLDGameObject(pos,context) {
     var velocity = _velocity
     var exists = true
     var type : Int = 0
     var hR = _hR
     var pointsOnDestruction : Int = 0
     var destroyed = false
-    abstract fun collides(oC : Collidable): Boolean
-    abstract fun onCollide(oC: Collidable)
+    abstract fun collides(oC : OLDCollidable): Boolean
+    abstract fun onCollide(oC: OLDCollidable)
 }
 
-class Asteroid(pos: PointF, context: Context, _velocity : PointF, _mass: Float, _hR : Float, walle : PointF, _mxhp: Int) : Collidable(pos, context, _velocity, _hR){
+class OLDAsteroid(pos: PointF, context: Context, _velocity : PointF, _mass: Float, _hR : Float, walle : PointF, _mxhp: Int) : OLDCollidable(pos, context, _velocity, _hR){
     var omega = 50f
     var mxhp : Int = 5
     var hp : Int
@@ -110,7 +109,7 @@ class Asteroid(pos: PointF, context: Context, _velocity : PointF, _mass: Float, 
             position.y = hR
         }*/
     }
-    override fun collides(oC: Collidable): Boolean {
+    override fun collides(oC: OLDCollidable): Boolean {
         if (!exists or !oC.exists){
             return false
         }
@@ -123,10 +122,10 @@ class Asteroid(pos: PointF, context: Context, _velocity : PointF, _mass: Float, 
 
         return false
     }
-    override fun onCollide(oC: Collidable) {
+    override fun onCollide(oC: OLDCollidable) {
         if (oC.type == 1)
         {
-            val other= oC as Asteroid
+            val other= oC as OLDAsteroid
             val d = kotlin.math.sqrt(
                 kotlin.math.abs(position.x - other.position.x).pow(2) + kotlin.math.abs(
                     position.y - other.position.y
@@ -170,13 +169,13 @@ class Asteroid(pos: PointF, context: Context, _velocity : PointF, _mass: Float, 
             other.position.y = mid.y - vy / dv * other.hR * 1.001f
 
         }else if(oC.type==2){
-            val bll = oC as Ball
+            val bll = oC as OLDBall
             hp-=bll.damage
             oC.exists= false
             oC.destroyed = true
         }else if(oC.type == 3)
         {
-            val exp = oC as Explosion
+            val exp = oC as OLDExplosion
             if (exp.active)
             {
                 hp-=exp.damage
@@ -184,7 +183,7 @@ class Asteroid(pos: PointF, context: Context, _velocity : PointF, _mass: Float, 
             }
         }else if(oC.type==4)
         {
-            val rc = oC as Rocket
+            val rc = oC as OLDRocket
             hp-=rc.damage
             rc.exists=false
             rc.destroyed= true
@@ -194,7 +193,7 @@ class Asteroid(pos: PointF, context: Context, _velocity : PointF, _mass: Float, 
     }
 }
 
-class Ball(pos: PointF, context: Context, _velocity :PointF, mss :Float, _hR : Float, walle : PointF) : Collidable(pos,context,_velocity,_hR){
+class OLDBall(pos: PointF, context: Context, _velocity :PointF, mss :Float, _hR : Float, walle : PointF) : OLDCollidable(pos,context,_velocity,_hR){
 
     var mass :Float
     var lifetime: Long =5000
@@ -241,7 +240,7 @@ class Ball(pos: PointF, context: Context, _velocity :PointF, mss :Float, _hR : F
         }
         lifetime-=millisPassed
     }
-    override fun collides(oC: Collidable): Boolean {
+    override fun collides(oC: OLDCollidable): Boolean {
         if (!exists or !oC.exists){
             return false
         }
@@ -257,9 +256,9 @@ class Ball(pos: PointF, context: Context, _velocity :PointF, mss :Float, _hR : F
         return false
 
     }
-    override fun onCollide(oC: Collidable){
+    override fun onCollide(oC: OLDCollidable){
         if (oC.type==2) {
-            val other = oC as Ball
+            val other = oC as OLDBall
 
             val mid = PointF(
                 (position.x * (other.hR) + other.position.x * (hR)) / (other.hR + hR),
@@ -294,11 +293,11 @@ class Ball(pos: PointF, context: Context, _velocity :PointF, mss :Float, _hR : F
         }else if(oC.type==1){
             exists= false
             destroyed = true
-            val other = oC as Asteroid
+            val other = oC as OLDAsteroid
             other.hp-=damage
         }else if(oC.type == 3)
         {
-            val exp = oC as Explosion
+            val exp = oC as OLDExplosion
             if (exp.active){
                 exists= false
                 destroyed = true
@@ -306,7 +305,7 @@ class Ball(pos: PointF, context: Context, _velocity :PointF, mss :Float, _hR : F
 
         }else if(oC.type==4)
         {
-            val rc = oC as Rocket
+            val rc = oC as OLDRocket
             exists=false
             destroyed= true
             rc.exists=false
@@ -316,7 +315,7 @@ class Ball(pos: PointF, context: Context, _velocity :PointF, mss :Float, _hR : F
     }
 }
 
-class Explosion(pos: PointF, context: Context, _velocity :PointF, _hR : Float, dmg: Int) : Collidable(pos,context,_velocity,_hR){
+class OLDExplosion(pos: PointF, context: Context, _velocity :PointF, _hR : Float, dmg: Int) : OLDCollidable(pos,context,_velocity,_hR){
     var lifetime: Long =50
     var damage = 10
     var active = true
@@ -366,7 +365,7 @@ class Explosion(pos: PointF, context: Context, _velocity :PointF, _hR : Float, d
 
         lifetime-=millisPassed
     }
-    override fun collides(oC: Collidable): Boolean {
+    override fun collides(oC: OLDCollidable): Boolean {
         if (!exists or !oC.exists){
             return false
         }
@@ -382,13 +381,13 @@ class Explosion(pos: PointF, context: Context, _velocity :PointF, _hR : Float, d
         return false
 
     }
-    override fun onCollide(oC: Collidable){
+    override fun onCollide(oC: OLDCollidable){
         if(!active) return
         if (oC.type==2) {
             oC.exists = false
             oC.destroyed = true
         }else if(oC.type==1){
-            val other = oC as Asteroid
+            val other = oC as OLDAsteroid
             other.hp-=damage
         }else if(oC.type==4){
             oC.exists = false
@@ -397,7 +396,7 @@ class Explosion(pos: PointF, context: Context, _velocity :PointF, _hR : Float, d
     }
 }
 
-class Rocket(pos: PointF, context: Context, _velocity : PointF, _hR : Float, walle : PointF,dmg: Int, _turn: Float, _iAc:Float) : Collidable(pos, context, _velocity, _hR){
+class OLDRocket(pos: PointF, context: Context, _velocity : PointF, _hR : Float, walle : PointF, dmg: Int, _turn: Float, _iAc:Float) : OLDCollidable(pos, context, _velocity, _hR){
     val random = Random(System.currentTimeMillis())
     var lifetime : Long = 0
     var inaccuracy : Float
@@ -487,7 +486,7 @@ class Rocket(pos: PointF, context: Context, _velocity : PointF, _hR : Float, wal
         }*/
         lifetime+=millisPassed
     }
-    override fun collides(oC: Collidable): Boolean {
+    override fun collides(oC: OLDCollidable): Boolean {
         if (!exists or !oC.exists){
             return false
         }
@@ -500,10 +499,10 @@ class Rocket(pos: PointF, context: Context, _velocity : PointF, _hR : Float, wal
 
         return false
     }
-    override fun onCollide(oC: Collidable) {
+    override fun onCollide(oC: OLDCollidable) {
         if (oC.type == 1)
         {
-            val other= oC as Asteroid
+            val other= oC as OLDAsteroid
             other.hp-=damage
             exists=false
             destroyed=true
@@ -515,7 +514,7 @@ class Rocket(pos: PointF, context: Context, _velocity : PointF, _hR : Float, wal
             destroyed=true
         }else if(oC.type == 3)
         {
-            val exp = oC as Explosion
+            val exp = oC as OLDExplosion
             if (exp.active)
             {
                 exists=false
