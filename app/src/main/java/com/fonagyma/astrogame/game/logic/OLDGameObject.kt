@@ -131,16 +131,5 @@ class OLDCannon(pos: PointF, context: Context) : OLDGameObject(pos,context){
 /**
  * rotates clockwise
  */
-fun rotateVector(v : PointF, rad: Double): PointF{
-        return PointF((kotlin.math.cos(rad) *v.x+ kotlin.math.sin(rad) *v.y).toFloat(),
-                (kotlin.math.cos(rad) *v.y- kotlin.math.sin(rad) *v.x).toFloat())
-}
-
-fun mirrorVectorToVector(v:PointF,e:PointF):PointF{
-        val angle = atan(e.y.toDouble()/e.x.toDouble())
-        val va= rotateVector(v,angle)
-        va.y*=-1f
-        return rotateVector(va,-angle)
-}
 
 

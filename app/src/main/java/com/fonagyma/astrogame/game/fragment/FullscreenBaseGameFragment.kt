@@ -6,14 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.fonagyma.astrogame.game.logic.OLDLiveDrawingView
 import com.fonagyma.astrogame.databinding.FragmentFullscreenBaseGameBinding
-
+import com.fonagyma.astrogame.game.logic.GameView
 
 
 class FullscreenBaseGameFragment : Fragment() {
 
 
     private var _binding: FragmentFullscreenBaseGameBinding? = null
-
+    private lateinit var gameView: GameView
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -33,11 +33,13 @@ class FullscreenBaseGameFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
-        val ldView = OLDLiveDrawingView(requireContext(),binding.root.display.width.toInt(),binding.root.display.height.toInt())
+        /*val ldView = OLDLiveDrawingView(requireContext(),binding.root.display.width.toInt(),binding.root.display.height.toInt())
         binding.root.addView(ldView)
-        ldView.resume()
+        ldView.resume()*/
+        gameView = GameView(requireContext(),binding.root.display.width.toInt(),binding.root.display.height.toInt())
+        binding.root.addView(gameView)
+        gameView.resume()
 
-        //game.start
     }
 
 
