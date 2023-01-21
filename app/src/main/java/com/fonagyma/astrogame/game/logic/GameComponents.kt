@@ -3,16 +3,17 @@ package com.fonagyma.astrogame.game.logic
 import android.content.Context
 import android.graphics.*
 import kotlin.math.atan
+import kotlin.math.pow
 
 class PhysicalState(var position: PointF,
                     var velocity: PointF,
                     private var acceleration: PointF,
                     var mass: Float){
     fun update(millis: Long){
-        position.x+=velocity.x*(millis/1000).toFloat()
-        position.y+=velocity.y*(millis/1000).toFloat()
-        velocity.x+=acceleration.x*(millis/1000).toFloat()
-        velocity.y+=acceleration.y*(millis/1000).toFloat()
+        position.x+=velocity.x*(millis.toFloat()/1000).toFloat()
+        position.y+=velocity.y*(millis.toFloat()/1000).toFloat()
+        velocity.x+=acceleration.x*(millis.toFloat()/1000).toFloat()
+        velocity.y+=acceleration.y*(millis.toFloat()/1000).toFloat()
     }
     fun applyForce(force: PointF){
         acceleration.x+=force.x/mass
@@ -45,7 +46,8 @@ class Timer{
     }
 }
 
-class Drawable(context: Context, resID: Int, var rotation: Float, var sizeX: Float, var sizeY: Float,centerXRatio: Float,centerYRatio:Float){
+class Drawable(context: Context, resID: Int, var rotation: Float, var sizeX: Float, var sizeY: Float,
+               centerXRatio: Float,centerYRatio:Float,var width : Float, var height : Float){
     private var imageBitmap: Bitmap = BitmapFactory.decodeResource(context.resources,resID)
     private var centerPointF = PointF(imageBitmap.width*(centerXRatio)-imageBitmap.width/2f,imageBitmap.height*(centerYRatio)-imageBitmap.height/2f)
     fun draw(canvas: Canvas,paint: Paint,position: PointF){
@@ -54,7 +56,9 @@ class Drawable(context: Context, resID: Int, var rotation: Float, var sizeX: Flo
         matrix.preScale(sizeX,sizeY)
         val adjustedBitmap = Bitmap.createBitmap(imageBitmap,0, 0, imageBitmap.width, imageBitmap.height, matrix, true)
         val c = rotateVector(PointF(centerPointF.x*sizeX,centerPointF.y*sizeY),-rotation/180f* Math.PI)
-        canvas.drawBitmap(adjustedBitmap,position.x-adjustedBitmap.width/2-c.x,position.y-adjustedBitmap.height/2-c.y,paint)
+        canvas.drawBitmap(adjustedBitmap,null,RectF(position.x-width*(adjustedBitmap.width.toFloat()/imageBitmap.width.toFloat())/2f-c.x,
+            position.y-height*(adjustedBitmap.height.toFloat()/imageBitmap.height.toFloat())/2f-c.y,position.x+width*(adjustedBitmap.width.toFloat()/imageBitmap.width.toFloat())/2f-c.x,
+            position.y+height*(adjustedBitmap.height.toFloat()/imageBitmap.height.toFloat())/2f-c.y),paint)
     }
 }
 
@@ -73,16 +77,37 @@ class Collider{
         hitBoxRadius=_hitBoxRadius
         isBox=false
     }
-    //TODO: collision for circle and rectangle
+    fun intersects(otherCollider: Collider): Boolean{
+        if(isBox){
+            if (otherCollider.isBox){
+                //for now lets stay with circle-circle will do math later
+            }else{
+                //for now lets stay with circle-circle will do math later
+            }
+        }else{
+            if (otherCollider.isBox){
+                //for now lets stay with circle-circle will do math later
+            }else{
+                val distance = kotlin.math.sqrt(
+                    kotlin.math.abs(hitBoxCenter.x - otherCollider.hitBoxCenter.x).pow(2) +
+                            kotlin.math.abs(hitBoxCenter.y - otherCollider.hitBoxCenter.y).pow(2)
+                )
+                return hitBoxRadius + otherCollider.hitBoxRadius - 1f > distance
+            }
+        }
+        return false
+    }
 }
 
-interface GObject{
-    var timer : Timer
-    var physicalState : PhysicalState
-    var drawable : Drawable
-    var collider : Collider
-    fun draw(millis: Long)
-    fun update(millis: Long)
+abstract class GObject(var physicalState : PhysicalState){
+    lateinit var drawable : Drawable
+    lateinit var collider : Collider
+    var exists : Boolean= true
+    var wasDestroyed : Boolean= false
+    var typeID : Int = 0
+    abstract fun draw(canvas: Canvas,paint: Paint)
+    abstract fun update(millis: Long)
+    abstract fun onCollide(otherGObject: GObject)
 }
 
 
@@ -90,7 +115,6 @@ fun rotateVector(v : PointF, rad: Double): PointF{
     return PointF((kotlin.math.cos(rad) *v.x+ kotlin.math.sin(rad) *v.y).toFloat(),
         (kotlin.math.cos(rad) *v.y- kotlin.math.sin(rad) *v.x).toFloat())
 }
-
 
 //mirrors v to e
 fun mirrorVectorToVector(v:PointF,e:PointF):PointF{
