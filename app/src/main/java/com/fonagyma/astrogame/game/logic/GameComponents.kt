@@ -21,6 +21,10 @@ class PhysicalState(var position: PointF,
     }
 }
 
+//TODO: add status effects somehow
+
+//TODO: figure something out for helpers/abilities/summonables
+
 class Timer{
    private var millis : Long = 0
     constructor(){
@@ -104,6 +108,9 @@ abstract class GObject(var physicalState : PhysicalState){
     lateinit var collider : Collider
     var exists : Boolean= true
     var wasDestroyed : Boolean= false
+    var pointsOnDestruction : Int = 0
+    var gearsOnDestruction : Int = 0
+    var crystalsOnDestruction : Int = 0
     var typeID : Int = 0
     abstract fun draw(canvas: Canvas,paint: Paint)
     abstract fun update(millis: Long)

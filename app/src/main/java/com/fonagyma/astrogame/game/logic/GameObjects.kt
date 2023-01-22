@@ -14,7 +14,7 @@ class Bomb(context: Context,physicalState: PhysicalState, var border: PointF, si
     var damage : Int
     init {
         damage=_damage
-        drawable= Drawable(context, R.drawable.test_100_100,0f,1.4f,1.4f, .49f,.51f,size,size)
+        drawable= Drawable(context, R.drawable.bomb,0f,1f,1f, .49f,.51f,size,size)
         collider= Collider(physicalState.position,size)
         typeID=1
     }
@@ -49,6 +49,7 @@ class Meteor(context: Context,physicalState: PhysicalState, var border: PointF,v
     var health : Int
     init {
         maxHealth= _maxHealth
+        pointsOnDestruction= maxHealth
         health= maxHealth
         drawable= Drawable(context, R.drawable.astroid1,0f,2f,2f, .49f,.51f,size,size)
         collider= Collider(physicalState.position,size)
@@ -118,24 +119,25 @@ class BomberWithJoystick(var context: Context, var weaponHingePointF: PointF,var
     var padRadius : Float = 140f
     var margin = 5f
     var cursorRadius = 40f
-    var rotation = 0f
+    var rotation = 1f
     var aimSpeed : Float = .7f
     var rocketStartV = PointF()
     var rocketStartP = PointF()
-    var rocketStartS = 800f
+    var rocketStartS = 400f
     var aimDotN : Int = 15
-    var aimLengthToCannonLength : Float = 3f
-    var weaponDrawable = Drawable(context,R.drawable.cannon,0f,1f,1f,.5f,.5f,50f,80f)
+    var aimLengthToCannonLength : Float = 6f
+    var weaponDrawable = Drawable(context,R.drawable.cannon,0f,2f,2f,.5f,.5f,50f,80f)
     var millisSinceStart : Long = 0
 
     init {
-
+        rocketStartP= rotateVector(PointF(0f,-weaponDrawable.height*.8f),-rotation/180f* Math.PI)
+        rocketStartV= rotateVector(PointF(0f,-1f), -rotation/180f* Math.PI)
+        rocketStartV.x*=rocketStartS
+        rocketStartV.y*=rocketStartS
     }
 
     override fun draw(canvas: Canvas,paint: Paint) {
-        //the cannon
-        weaponDrawable.rotation=rotation
-        weaponDrawable.draw(canvas,paint,weaponHingePointF)
+
 
         //with aiming
         //direction
@@ -161,6 +163,10 @@ class BomberWithJoystick(var context: Context, var weaponHingePointF: PointF,var
             canvas.drawLine(weaponHingePointF.x,weaponHingePointF.y,weaponHingePointF.x+v.x,weaponHingePointF.y+v.y,paint)
         }
 
+        //the cannon
+        weaponDrawable.rotation=rotation
+        weaponDrawable.draw(canvas,paint,weaponHingePointF)
+
         //console here
         paint.strokeWidth=strokeWidth
         paint.color= colorBackground
@@ -179,7 +185,7 @@ class BomberWithJoystick(var context: Context, var weaponHingePointF: PointF,var
     }
 
     override fun objectTypeAttack(): GObject {
-        return Bomb(context, PhysicalState(PointF(weaponHingePointF.x+rocketStartP.x,weaponHingePointF.y+ rocketStartP.y),rocketStartV, PointF(0f,0f),1f),border, 50f, 1)
+        return Bomb(context, PhysicalState(PointF(weaponHingePointF.x+rocketStartP.x,weaponHingePointF.y+ rocketStartP.y),rocketStartV, PointF(0f,0f),1f),border, 100f, 1)
     }
 
     override fun actionTypeAttack(obstacles: ArrayList<GObject>): Int {

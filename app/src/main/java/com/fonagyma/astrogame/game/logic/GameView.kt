@@ -5,44 +5,53 @@ import android.content.Context
 import android.graphics.*
 import android.util.Log
 import android.view.MotionEvent
-import android.view.Surface
 import android.view.SurfaceView
-import com.fonagyma.astrogame.R
+import kotlin.random.Random
 
 class GameView(context: Context,width: Int, height: Int): SurfaceView(context), Runnable {
     private lateinit var thread: Thread
     private lateinit var canvas: Canvas
+    private var ratioHeight = height.toFloat()/70f
+    private var random = Random(System.currentTimeMillis())
     private var surfaceSize = PointF(width.toFloat(),height.toFloat())
     private var paint = Paint()
     @Volatile
     private var drawing = false
     private var paused = false
+
     private var lastFrameMillis : Long = 0
     private var millis: Long= 0
     private var fps: Long = 0
     private var gameTimer = Timer(0)
+    private var obstacleLimit = 10
+    private var newObstacleInterval : Long = 1200
+    private var timerUntilNextObstacle = Timer(newObstacleInterval)
+
+    private var score: Long = 0
+    private var crystals: Long = 0
+    private var gears: Long = 0
+
     private var pseRect: RectF
-    private var buttonMargin = 100f
-    private var buttonHeight = 100f
+    private var buttonMargin = ratioHeight
+    private var buttonHeight = ratioHeight*3f
     private var drawables = ArrayList<Drawable>()
     private var obstacles = ArrayList<GObject>()
     private var attacks = ArrayList<GObject>()
     private var weaponSystem : WeaponSystem
 
+    //TODO: Buttons for a new screen, resource info, ability status | maybe link
+    // or implement the upgrades into the weapon systems
+
+
     init{
+        paint.textSize=ratioHeight
         paint.strokeWidth=5f
         paint.color= Color.argb(255,255,125,125)
         pseRect = RectF(buttonMargin,buttonMargin,buttonHeight+buttonMargin, buttonHeight+buttonMargin)
         weaponSystem = BomberWithJoystick(context, PointF(.3f*surfaceSize.x,.7f*surfaceSize.y),PointF(.6f*surfaceSize.x,.7f*surfaceSize.y),surfaceSize)
-        drawables.add(Drawable(context, R.drawable.test_100_100,0f,1f,1f,.5f,.5f,50f,50f))
-        drawables.add(Drawable(context, R.drawable.test_200_200,30f,1f,1f,.5f,.5f,50f,50f))
-        drawables.add(Drawable(context, R.drawable.test_300_100,60f,1f,1f,.5f,.5f,50f,50f))
-        obstacles.add(Meteor(context, PhysicalState(PointF(surfaceSize.x*.2f,surfaceSize.y*.2f),PointF(0f,0f),PointF(0f,0f),1f), surfaceSize,30f,5))
-        obstacles.add(Meteor(context, PhysicalState(PointF(surfaceSize.x*.5f,surfaceSize.y*.2f),PointF(5f,5f),PointF(0f,0f),1f),surfaceSize,30f,5))
-        obstacles.add(Meteor(context, PhysicalState(PointF(surfaceSize.x*.2f,surfaceSize.y*.3f),PointF(10f,0f),PointF(0f,0f),1f),surfaceSize,50f,5))
-        obstacles.add(Meteor(context, PhysicalState(PointF(surfaceSize.x*.3f,surfaceSize.y*.5f),PointF(0f,10f),PointF(0f,0f),1f),surfaceSize,100f,5))
-        obstacles.add(Meteor(context, PhysicalState(PointF(surfaceSize.x*.1f,surfaceSize.y*.5f),PointF(0f,0f),PointF(0f,0f),1f),surfaceSize,70f,5))
-        obstacles.add(Meteor(context, PhysicalState(PointF(surfaceSize.x*.2f,surfaceSize.y*.4f),PointF(10f,5f),PointF(0f,0f),1f),surfaceSize,20f,5))
+        //drawables.add(Drawable(context, R.drawable.test_100_100,0f,1f,1f,.5f,.5f,50f,50f))
+        //drawables.add(Drawable(context, R.drawable.test_200_200,30f,1f,1f,.5f,.5f,50f,50f))
+        //drawables.add(Drawable(context, R.drawable.test_300_100,60f,1f,1f,.5f,.5f,50f,50f))
 
     }
 
@@ -67,32 +76,42 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
     }
     private fun draw(){
         if(holder.surface.isValid){
-            canvas = holder.lockCanvas()
-            canvas.drawColor(Color.argb(255,255,255,255))
+            if(!paused) {
+                //TODO: needs a timer up top, a wave counter and a score counter
+                canvas = holder.lockCanvas()
+                canvas.drawColor(Color.argb(255, 255, 255, 255))
 
-            paint.style=Paint.Style.STROKE
-            canvas.drawRect(pseRect,paint)
+                paint.style = Paint.Style.STROKE
+                canvas.drawRect(pseRect, paint)
 
-            paint.style=Paint.Style.FILL
-            for (d in drawables){
-                d.draw(canvas,paint,PointF(surfaceSize.x/2,surfaceSize.y/2))
+                paint.style = Paint.Style.FILL
+                for (d in drawables) {
+                    d.draw(canvas, paint, PointF(surfaceSize.x / 2, surfaceSize.y / 2))
+                }
+
+                for (o in obstacles) {
+                    o.draw(canvas, paint)
+                }
+                for (a in attacks) {
+                    a.draw(canvas, paint)
+                }
+
+                //TODO: action type attacks, maybe helpers, a sidebar for the current status effects/boosts
+
+                weaponSystem.draw(canvas, paint)
+
+                canvas.drawCircle(surfaceSize.x / 2, surfaceSize.y / 2, 5f, paint)
+
+                //info
+                canvas.drawText("fps: $fps\n score: $score", 200f, 50f, paint)
+            }else{
+                //TODO: this is for more utility (upgrades, ability select,
             }
-
-            for(o in obstacles){
-                o.draw(canvas,paint)
-            }
-            for(a in attacks){
-                a.draw(canvas,paint)
-            }
-
-            weaponSystem.draw(canvas,paint)
-
-            canvas.drawCircle(surfaceSize.x/2,surfaceSize.y/2,5f,paint)
-
             holder.unlockCanvasAndPost(canvas)
         }
     }
     private fun update(millis: Long){
+
         Log.d("millis", "$millis")
         for (d in drawables){
             d.rotation+=2f
@@ -123,12 +142,14 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
             }
         }
 
-        ///garbage collection may be faster by reusing old ones
-        var newList = ArrayList<GObject>()
+        //TODO: garbage collection may be faster by reusing old ones
+        val newList = ArrayList<GObject>()
         for (o in obstacles){
             if(o.exists)
             {
                 newList.add(o)
+            }else if(o.wasDestroyed){
+                score+=o.pointsOnDestruction
             }
         }
         obstacles=newList
@@ -140,6 +161,14 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
             }
         }
         attacks=newList
+
+        //add new meteors
+        timerUntilNextObstacle.decrease(millis)
+        if (timerUntilNextObstacle.get()<0 && obstacleLimit>=obstacles.size){
+            obstacles.add(Meteor(context, PhysicalState(PointF(surfaceSize.x*(.1f+.8f*random.nextFloat()),surfaceSize.y*(.05f+.1f*random.nextFloat())),PointF(.3f*random.nextFloat(),20f*random.nextFloat()),PointF(0f,0f),1f), surfaceSize,30f,5))
+            timerUntilNextObstacle.increase(newObstacleInterval)
+        }
+
 
     }
     fun pause() {
@@ -179,6 +208,7 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
         // Did the user touch the screen
         if (motionEvent.action and MotionEvent.ACTION_MASK ==
             MotionEvent.ACTION_DOWN) {
+            //TODO: add "UI" for utility screen on pause
             if (!paused){
                 weaponSystem.control(arrayListOf(PointF(motionEvent.x,motionEvent.y)))
             }
