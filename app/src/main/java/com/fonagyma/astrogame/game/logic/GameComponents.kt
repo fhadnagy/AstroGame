@@ -22,8 +22,15 @@ class PhysicalState(var position: PointF,
 }
 
 //TODO: add status effects somehow
+abstract class StatusEffect(var duration: Long){
+
+}
 
 //TODO: figure something out for helpers/abilities/summonables
+abstract class actionTypeAttackDrawable(){
+    abstract fun draw()
+    abstract fun update()
+}
 
 class Timer{
    private var millis : Long = 0
@@ -53,13 +60,14 @@ class Timer{
 class Drawable(context: Context, resID: Int, var rotation: Float, var sizeX: Float, var sizeY: Float,
                centerXRatio: Float,centerYRatio:Float,var width : Float, var height : Float){
     private var imageBitmap: Bitmap = BitmapFactory.decodeResource(context.resources,resID)
-    private var centerPointF = PointF(imageBitmap.width*(centerXRatio)-imageBitmap.width/2f,imageBitmap.height*(centerYRatio)-imageBitmap.height/2f)
+    private var centerPointF = PointF(width*(centerXRatio)-width/2f,height*(centerYRatio)-height/2f)
     fun draw(canvas: Canvas,paint: Paint,position: PointF){
         val matrix = Matrix()
         matrix.preRotate(rotation)
         matrix.preScale(sizeX,sizeY)
         val adjustedBitmap = Bitmap.createBitmap(imageBitmap,0, 0, imageBitmap.width, imageBitmap.height, matrix, true)
         val c = rotateVector(PointF(centerPointF.x*sizeX,centerPointF.y*sizeY),-rotation/180f* Math.PI)
+        //canvas.drawBitmap(adjustedBitmap,position.x-adjustedBitmap.width/2-c.x,position.y-adjustedBitmap.height/2-c.y,paint)
         canvas.drawBitmap(adjustedBitmap,null,RectF(position.x-width*(adjustedBitmap.width.toFloat()/imageBitmap.width.toFloat())/2f-c.x,
             position.y-height*(adjustedBitmap.height.toFloat()/imageBitmap.height.toFloat())/2f-c.y,position.x+width*(adjustedBitmap.width.toFloat()/imageBitmap.width.toFloat())/2f-c.x,
             position.y+height*(adjustedBitmap.height.toFloat()/imageBitmap.height.toFloat())/2f-c.y),paint)

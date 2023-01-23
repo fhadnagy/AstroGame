@@ -6,6 +6,9 @@ import android.graphics.*
 import android.util.Log
 import android.view.MotionEvent
 import android.view.SurfaceView
+import kotlin.math.absoluteValue
+import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 class GameView(context: Context,width: Int, height: Int): SurfaceView(context), Runnable {
@@ -24,10 +27,12 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
     private var fps: Long = 0
     private var gameTimer = Timer(0)
     private var obstacleLimit = 10
-    private var newObstacleInterval : Long = 1200
+    private var newObstacleInterval : Long = 3200
     private var timerUntilNextObstacle = Timer(newObstacleInterval)
 
     private var score: Long = 0
+    private var maxHealth: Int = 20
+    private var health: Int = maxHealth
     private var crystals: Long = 0
     private var gears: Long = 0
 
@@ -38,6 +43,9 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
     private var obstacles = ArrayList<GObject>()
     private var attacks = ArrayList<GObject>()
     private var weaponSystem : WeaponSystem
+    private var earthRadius= ratioHeight*25f
+    private var earthCenterPointF = PointF(surfaceSize.x/2, surfaceSize.y+earthRadius*.82f)
+    private var earthCollider = Collider(earthCenterPointF,earthRadius)
 
     //TODO: Buttons for a new screen, resource info, ability status | maybe link
     // or implement the upgrades into the weapon systems
@@ -54,8 +62,6 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
         //drawables.add(Drawable(context, R.drawable.test_300_100,60f,1f,1f,.5f,.5f,50f,50f))
 
     }
-
-
     override fun run(){
         while(drawing){
             val frameStartTime = System.currentTimeMillis()
@@ -65,10 +71,10 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
                 0
             }
             lastFrameMillis=frameStartTime
+            draw()
             if(!paused){
                 update(millis)
             }
-            draw()
             if(millis>0){
                 fps=1000/millis
             }
@@ -78,8 +84,12 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
         if(holder.surface.isValid){
             if(!paused) {
                 //TODO: needs a timer up top, a wave counter and a score counter
+                // a health bar up top
                 canvas = holder.lockCanvas()
+
                 canvas.drawColor(Color.argb(255, 255, 255, 255))
+                paint.color= Color.argb(255,255,15,125)
+                canvas.drawCircle(earthCenterPointF.x,earthCenterPointF.y,earthRadius,paint)
 
                 paint.style = Paint.Style.STROKE
                 canvas.drawRect(pseRect, paint)
@@ -113,9 +123,7 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
     private fun update(millis: Long){
 
         Log.d("millis", "$millis")
-        for (d in drawables){
-            d.rotation+=2f
-        }
+
         weaponSystem.update(millis)
 
         if (weaponSystem.timerUntilNextAttack.get()<0){
@@ -128,9 +136,7 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
             weaponSystem.timerUntilNextAttack.increase(weaponSystem.reloadTimeMillis)
         }
 
-        for (o in obstacles){
-            o.update(millis)
-        }
+
         for (a in attacks){
             a.update(millis)
             for (o in obstacles){
@@ -142,6 +148,18 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
             }
         }
 
+        for (o in obstacles){
+            o.update(millis)
+            if (o.exists && o.collider.intersects(earthCollider))
+            {
+                if (o.typeID==-1)
+                {
+                    health-=(o as Meteor).health
+                }
+                o.exists= false
+                o.wasDestroyed=true
+            }
+        }
         //TODO: garbage collection may be faster by reusing old ones
         val newList = ArrayList<GObject>()
         for (o in obstacles){
@@ -153,19 +171,30 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
             }
         }
         obstacles=newList
-        newList.clear()
+        val newListB = ArrayList<GObject>()
         for (a in attacks){
             if(a.exists)
             {
-                newList.add(a)
+                newListB.add(a)
+            }else{
+                when(a.typeID){
+                    1 -> {
+                        newListB.add(Explosion(context,PhysicalState(a.physicalState.position,
+                            PointF(0f,0f),PointF(0f,0f),1f),2,130,100f))
+                    }
+                    else -> {
+
+                    }
+                }
             }
         }
-        attacks=newList
+        attacks=newListB
 
+        //TODO: maybe add was destroyed to bomb so doesn't explode on wall
         //add new meteors
         timerUntilNextObstacle.decrease(millis)
         if (timerUntilNextObstacle.get()<0 && obstacleLimit>=obstacles.size){
-            obstacles.add(Meteor(context, PhysicalState(PointF(surfaceSize.x*(.1f+.8f*random.nextFloat()),surfaceSize.y*(.05f+.1f*random.nextFloat())),PointF(.3f*random.nextFloat(),20f*random.nextFloat()),PointF(0f,0f),1f), surfaceSize,30f,5))
+            obstacles.add(Meteor(context, newPhysicalForEarth(1f),30f,5))
             timerUntilNextObstacle.increase(newObstacleInterval)
         }
 
@@ -186,7 +215,6 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
         lastFrameMillis=0
 
     }
-
     fun resume() {
         drawing = true
         // Initialize the instance of Thread
@@ -209,9 +237,6 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
         if (motionEvent.action and MotionEvent.ACTION_MASK ==
             MotionEvent.ACTION_DOWN) {
             //TODO: add "UI" for utility screen on pause
-            if (!paused){
-                weaponSystem.control(arrayListOf(PointF(motionEvent.x,motionEvent.y)))
-            }
             if(pseRect.contains(motionEvent.x,motionEvent.y)){
                 if (paused)
                 {
@@ -222,9 +247,18 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
                     pause()
                 }
             }
+            if (!paused){
+                weaponSystem.control(arrayListOf(PointF(motionEvent.x,motionEvent.y)))
+            }
+
         }
         return true
     }
-
+    fun newPhysicalForEarth(speedModifier: Float):PhysicalState{
+        val obstacleStartSpeedBase = 120f
+        val startPointF = PointF(surfaceSize.x*(-.3f+1.6f*random.nextFloat()),surfaceSize.y*(-.15f))
+        val d = sqrt((earthCenterPointF.x-startPointF.x).pow(2)+(earthCenterPointF.y-startPointF.y).pow(2))
+        return PhysicalState(startPointF, PointF((earthCenterPointF.x-startPointF.x)*obstacleStartSpeedBase*speedModifier/d,(earthCenterPointF.y-startPointF.y)*obstacleStartSpeedBase*speedModifier/d), PointF(0f,0f),1f)
+    }
 
 }

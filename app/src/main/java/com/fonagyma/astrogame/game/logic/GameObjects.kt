@@ -1,13 +1,11 @@
 package com.fonagyma.astrogame.game.logic
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.PointF
+import android.graphics.*
 import android.util.Log
 import com.fonagyma.astrogame.R
 import kotlin.math.*
+import kotlin.random.Random
 
 
 class Bomb(context: Context,physicalState: PhysicalState, var border: PointF, size: Float, _damage: Int): GObject(physicalState){
@@ -44,7 +42,53 @@ class Bomb(context: Context,physicalState: PhysicalState, var border: PointF, si
     }
 }
 
-class Meteor(context: Context,physicalState: PhysicalState, var border: PointF,var size: Float,_maxHealth: Int) : GObject(physicalState) {
+class Explosion(context: Context, physicalState: PhysicalState, var damage : Int, var lifetime: Long, var size: Float) : GObject(physicalState){
+    var active = true
+    private val rnd = Random(System.currentTimeMillis())
+    init {
+        typeID = 2
+        var turn = rnd.nextFloat()*360f
+        collider = Collider(physicalState.position, size)
+        drawable = Drawable(context,R.drawable.exp,turn,3f,3f,.4f,.43f,size,size)
+    }
+    override fun draw(canvas: Canvas, paint: Paint) {
+        if(!exists) return
+        drawable.draw(canvas,paint,physicalState.position)
+
+        paint.color=Color.argb(255,255,0,0)
+
+        paint.style= Paint.Style.STROKE
+        canvas.drawCircle(physicalState.position.x,physicalState.position.y,size,paint)
+
+        paint.style= Paint.Style.FILL
+
+    }
+
+    override fun update(millis: Long) {
+        if (lifetime<1){
+            exists= false
+        }
+        active = false
+        if(!exists) return
+
+        lifetime-=millis
+    }
+
+
+    override fun onCollide(otherGObject: GObject) {
+
+        if(!active) return
+       when(otherGObject.typeID){
+           -1 -> {
+               (otherGObject as Meteor).health-=damage
+           }
+           else -> {
+           }
+       }
+    }
+}
+
+class Meteor(context: Context,physicalState: PhysicalState,var size: Float,_maxHealth: Int) : GObject(physicalState) {
     var maxHealth : Int
     var health : Int
     init {
@@ -79,15 +123,19 @@ class Meteor(context: Context,physicalState: PhysicalState, var border: PointF,v
             wasDestroyed = true
         }
         physicalState.update(millis)
-        if(physicalState.position.x>border.x || physicalState.position.y>border.y|| physicalState.position.x<0 || physicalState.position.y<0){
+        /*if(physicalState.position.x>border.x || physicalState.position.y>border.y|| physicalState.position.x<0 || physicalState.position.y<0){
             exists = false
-        }
+        }*/
     }
 
     override fun onCollide(otherGObject: GObject) {
         when(otherGObject.typeID){
             1 -> {
                 health -= (otherGObject as Bomb).damage
+                otherGObject.exists=false
+            }
+            2 -> {
+                health -= (otherGObject as Explosion).damage
                 otherGObject.exists=false
             }
             else -> return
@@ -110,7 +158,7 @@ interface WeaponSystem{
 class BomberWithJoystick(var context: Context, var weaponHingePointF: PointF,var controlCenterPointF: PointF, var border: PointF) : WeaponSystem{
     override var objectType = true
     override var actionType = false
-    override var reloadTimeMillis : Long = 300
+    override var reloadTimeMillis : Long = 800
     override var timerUntilNextAttack = Timer(reloadTimeMillis)
     var cursorPointF : PointF = PointF(controlCenterPointF.x,controlCenterPointF.y)
     var colorBackground = Color.argb(255,255,155,155)
@@ -126,7 +174,7 @@ class BomberWithJoystick(var context: Context, var weaponHingePointF: PointF,var
     var rocketStartS = 400f
     var aimDotN : Int = 15
     var aimLengthToCannonLength : Float = 6f
-    var weaponDrawable = Drawable(context,R.drawable.cannon,0f,2f,2f,.5f,.5f,50f,80f)
+    var weaponDrawable = Drawable(context,R.drawable.test_100_100,0f,2f,2f,.5f,.5f,100f,100f)
     var millisSinceStart : Long = 0
 
     init {
@@ -185,7 +233,7 @@ class BomberWithJoystick(var context: Context, var weaponHingePointF: PointF,var
     }
 
     override fun objectTypeAttack(): GObject {
-        return Bomb(context, PhysicalState(PointF(weaponHingePointF.x+rocketStartP.x,weaponHingePointF.y+ rocketStartP.y),rocketStartV, PointF(0f,0f),1f),border, 100f, 1)
+        return Bomb(context, PhysicalState(PointF(weaponHingePointF.x+rocketStartP.x,weaponHingePointF.y+ rocketStartP.y),rocketStartV, PointF(0f,0f),1f),border, 20f, 2)
     }
 
     override fun actionTypeAttack(obstacles: ArrayList<GObject>): Int {
