@@ -71,10 +71,10 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
                 0
             }
             lastFrameMillis=frameStartTime
-            draw()
             if(!paused){
                 update(millis)
             }
+            draw()
             if(millis>0){
                 fps=1000/millis
             }
@@ -105,6 +105,7 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
                 for (a in attacks) {
                     a.draw(canvas, paint)
                 }
+                actionTypeAttackDrawable
 
                 //TODO: action type attacks, maybe helpers, a sidebar for the current status effects/boosts
 
@@ -194,7 +195,7 @@ class GameView(context: Context,width: Int, height: Int): SurfaceView(context), 
         //add new meteors
         timerUntilNextObstacle.decrease(millis)
         if (timerUntilNextObstacle.get()<0 && obstacleLimit>=obstacles.size){
-            obstacles.add(Meteor(context, newPhysicalForEarth(1f),30f,5))
+            obstacles.add(Meteor(context, newPhysicalForEarth(1f),200f,5))
             timerUntilNextObstacle.increase(newObstacleInterval)
         }
 

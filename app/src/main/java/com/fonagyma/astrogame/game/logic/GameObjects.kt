@@ -95,7 +95,8 @@ class Meteor(context: Context,physicalState: PhysicalState,var size: Float,_maxH
         maxHealth= _maxHealth
         pointsOnDestruction= maxHealth
         health= maxHealth
-        drawable= Drawable(context, R.drawable.astroid1,0f,2f,2f, .49f,.51f,size,size)
+        drawable= Drawable(context, R.drawable.ship_enemy, directionToRotation(PointF(physicalState.velocity.x,-physicalState.velocity.y)),
+            2f,2f, .49f,.51f,size,size)
         collider= Collider(physicalState.position,size)
         typeID=-1
     }
@@ -104,9 +105,9 @@ class Meteor(context: Context,physicalState: PhysicalState,var size: Float,_maxH
 
         drawable.draw(canvas,paint,physicalState.position)
 
-       // paint.style= Paint.Style.STROKE
-       // paint.color= Color.argb(255,255,15,125)
-        //canvas.drawCircle(collider.hitBoxCenter.x,collider.hitBoxCenter.y,collider.hitBoxRadius,paint)
+        paint.style= Paint.Style.STROKE
+        paint.color= Color.argb(255,255,15,125)
+        canvas.drawCircle(collider.hitBoxCenter.x,collider.hitBoxCenter.y,collider.hitBoxRadius,paint)
 
         paint.style= Paint.Style.FILL
         paint.color=Color.argb(255,255,0,0)
@@ -174,7 +175,7 @@ class BomberWithJoystick(var context: Context, var weaponHingePointF: PointF,var
     var rocketStartS = 400f
     var aimDotN : Int = 15
     var aimLengthToCannonLength : Float = 6f
-    var weaponDrawable = Drawable(context,R.drawable.test_100_100,0f,2f,2f,.5f,.5f,100f,100f)
+    var weaponDrawable = Drawable(context,R.drawable.laser,0f,2f,2f,.5f,.5f,100f,100f)
     var millisSinceStart : Long = 0
 
     init {

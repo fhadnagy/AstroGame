@@ -2,6 +2,9 @@ package com.fonagyma.astrogame.game.logic
 
 import android.content.Context
 import android.graphics.*
+import android.util.Log
+import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.pow
 
@@ -138,3 +141,94 @@ fun mirrorVectorToVector(v:PointF,e:PointF):PointF{
     va.y*=-1f
     return rotateVector(va,-angle)
 }
+
+fun directionToRotation(direction: PointF): Float{
+    val rt = atan(direction.x/ abs(direction.y)) *180f/ PI
+
+    if(rt==0.toDouble() && direction.y<0){
+        return 180f
+    }else if(rt<0 && direction.y>0){
+         return rt.toFloat()
+    }else if(rt>0 && direction.y>0){
+        return rt.toFloat()
+    }else if(rt<0 && direction.y<0){
+        return -180f-rt.toFloat()
+    }else if(rt>0 && direction.y<0){
+        return 180f-rt.toFloat()
+    }
+    return 0f
+}
+
+/*
+class GButton( box : RectF, context: Context, ImageR: Int) {
+
+    var strokeWidth = 5f
+    var upgradeCount : Int = 0
+
+    override fun log() {
+        TODO("Not yet implemented")
+    }
+    fun reset(){
+        counter = ctstart
+        upgradeCount = 0
+        upgradecost = 20
+    }
+
+    override fun onClick(p: PointF) {
+        counter+=incrAmonunt
+        upgradeCount++
+        upgradecost+=10
+    }
+
+    override fun update(millisPassed: Long, vararg plus: Float) {
+        return
+    }
+
+    override fun draw(canvas: Canvas, paint: Paint) {
+        val matrix = Matrix()
+        matrix.preScale(sizeX,sizeY)
+        val myB = Bitmap.createBitmap(imageBitmap,0, 0, imageBitmap.width, imageBitmap.height, matrix, true)
+
+        val c = rotateVector(PointF(cP.x*sizeX,cP.y*sizeY),-turn/180f* Math.PI)
+        canvas.drawBitmap(myB,midP.x-myB.width/2-c.x,midP.y-myB.height/2-c.y,paint)
+
+        paint.color=Color.argb(255,255,255,0)
+        paint.textSize= hitBox.height()/3f
+        canvas.drawText("$upgradeCount",hitBox.left+margin,hitBox.bottom-margin,paint)
+        paint.color=Color.argb(255,0,255,255)
+        canvas.drawText("$upgradecost",hitBox.left+margin,hitBox.top+paint.textSize,paint)
+        if (showHitbox){
+            paint.color= Color.argb(255,255,255,0)
+            paint.strokeWidth=strokeWidth
+            paint.style=Paint.Style.STROKE
+            canvas.drawRect(hitBox,paint)
+            paint.style=Paint.Style.FILL
+
+        }
+    }
+
+}
+
+class UpgradeButton(box : RectF, context: Context, ImageR: Int,  var counterStart:Float, var icrementAmount: Float): GButton(box,context,imageR){
+    var counter = 1f
+    var ctstart = 0f
+    var margin = 0f
+    init {
+        upgradecost= 20
+        sizeX = _x
+        sizeY = _y
+        margin = hitBox.height()/20f
+        sizeY *= hitBox.height()/120f
+        sizeX *= hitBox.height()/120f
+        counter = _ctrStart
+        ctstart = _ctrStart
+        incrAmonunt = _icrA
+        imageR= _ImageR
+        imageBitmap = BitmapFactory.decodeResource(context.resources,imageR)
+        Log.d("inf","${imageBitmap.height} ${imageBitmap.width} ")
+
+        cP= PointF(imageBitmap.width*(.50f)-imageBitmap.width/2f,imageBitmap.height*(.5f)-imageBitmap.height/2f)
+
+    }
+}
+*/
